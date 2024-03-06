@@ -1,0 +1,1 @@
+Ruta se almacenará el archivo python.zip de la capa lambda de aws.

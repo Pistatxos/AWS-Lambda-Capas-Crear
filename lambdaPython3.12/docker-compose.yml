@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  lambda:
+    build:
+      context: .
+      dockerfile: ./infraestructura/Dockerfile
+    volumes:
+      # Monta volumen para facilitar copia de librerías y archivos de salida
+      - ./app:/var/task 
+    # Mantener contenedor en ejecución
+    tty: true
+    entrypoint: /bin/bash
