@@ -30,7 +30,7 @@ Por ejemplo:
 Este comando descargará y preparará las versiones de la librería seleccionada dentro de la carpeta `/archivoCapaZip/versiones`, generando además un archivo `python.zip` que incluye todas las versiones, listo para subir como capa Lambda en AWS. Existe la posibilidad de cambiarlo en el config.py (leer más abajo).
 
 ## Crear libreria de una versión en concreto
-Si deseas crear una librería para una versión específica de Python, navega a la carpeta correspondiente (por ejemplo, `/lambdaPython3.9`) y ejecuta:
+Si deseas crear una librería para una versión específica de Python, navega a la carpeta correspondiente (por ejemplo, `/lambdaPython3.12`) y ejecuta:
 - `python3 main.py <nombre_de_la_librería>`
 
 Por ejemplo:

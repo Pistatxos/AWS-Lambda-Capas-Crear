@@ -16,7 +16,7 @@ def main(nombreAtributo):
     os.system(f"mkdir -p {destination_path}")
 
     # Lista de directorios que contienen los docker-compose.yml
-    directories = ["./lambdaPython3.8", "./lambdaPython3.9", "./lambdaPython3.10", "./lambdaPython3.11", "./lambdaPython3.12"]
+    directories = ["./lambdaPython3.10", "./lambdaPython3.11", "./lambdaPython3.12", "./lambdaPython3.13"]
 
     # Crea directorios versiones python para la capa lambda sino existen
     for d in directories:
@@ -38,12 +38,22 @@ def main(nombreAtributo):
         # Limpiando cache
         os.system("docker system prune -f")
 
+    # Detectar IDs si estamos en Linux/Mac
+    uid = os.getuid() if hasattr(os, 'getuid') else 1000
+    gid = os.getgid() if hasattr(os, 'getgid') else 1000
+
     for dir in directories:
         # Navega al directorio
         os.chdir(dir)
         # Levanta el contenedor
         print(f"Levantando contenedor {dir.replace('./l','l')}")
-        os.system("docker-compose up -d")
+        # Inyectamos las variables directamente en el comando
+        if sys.platform != "win32":
+            os.system(f"UID={uid} GID={gid} docker-compose up -d")
+        else:
+            os.system("docker-compose up -d")
+
+        #os.system("docker-compose up -d")
         # Ejecuta el script dentro del contenedor
         print(f'    - Ejecutando script started.')
         os.system(f"docker-compose exec lambda python3 started.py {nombreAtributo}")
@@ -61,7 +71,10 @@ def main(nombreAtributo):
         os.system(f"cp -R ./app/{nombreAtributo}/ .{destination_path}/{dir.replace('./lambdaP','p')}/site-packages/")
         # Borrar carpetas
         print(f"    - Borrando carpetas y .zip de los contenedores.")
-        shutil.rmtree(f'./app/{nombreAtributo}')
+        if sys.platform != "win32":
+            os.system(f"rm -rf ./app/{nombreAtributo}")
+        else:
+            os.system(f'rd /s /q "app\\{nombreAtributo}"')
         # Asegurarse de que la carpeta de destino existe
         os.makedirs(f"../archivosCapaLambda/versiones/{dir.replace('./lambdaP','p')}", exist_ok=True)
         # Ahora puedes mover el archivo de forma segura

@@ -22,7 +22,18 @@ def main(nombreAtributo):
 
     # Levanta el contenedor
     print(f"Levantando contenedor {nombre_carpeta}")
-    os.system("docker-compose up -d")
+
+    # Detectar IDs si estamos en Linux/Mac
+    uid = os.getuid() if hasattr(os, 'getuid') else 1000
+    gid = os.getgid() if hasattr(os, 'getgid') else 1000
+
+    # Inyectamos las variables directamente en el comando
+    if sys.platform != "win32":
+        os.system(f"UID={uid} GID={gid} docker-compose up -d")
+    else:
+        os.system("docker-compose up -d")
+
+    #os.system("docker-compose up -d")
 
     # Ejecuta el script dentro del contenedor
     print(f'    - Ejecutando script started.')
@@ -52,7 +63,7 @@ def main(nombreAtributo):
     if os.path.exists(pycache):
         # Intentar eliminar la carpeta
         try:
-            shutil.rmtree(pycache)
+            os.system(f"rm -rf {pycache}")
         except Exception as e:
             print(f"Error al eliminar __pycache__: {e}")
     else:
